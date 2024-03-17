@@ -1,51 +1,55 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import filedialog, messagebox
 
-def convert_currency():
-    try:
-        amount = float(entry_amount.get())
-        from_currency = combo_from_currency.get()
-        to_currency = combo_to_currency.get()
+def save_data():
+    model = model_entry.get()
+    year = year_entry.get()
+    price = price_entry.get()
+    continent = continent_var.get()
+    engine_volume = engine_volume_var.get()
+    fuel_type = fuel_type_var.get()
 
-        if from_currency == to_currency:
-            result_label.config(text=f"{amount} {from_currency} = {amount} {to_currency}")
-        else:
-            converted_amount = amount / exchange_rates[from_currency] * exchange_rates[to_currency]
-            result_label.config(text=f"{amount} {from_currency} = {converted_amount:.2f} {to_currency}")
-
-    except ValueError:
-        result_label.config(text="Будь ласка, введіть коректну суму.")
-
-exchange_rates = {'USD': 1.0, 'EUR': 0.85, 'GBP': 0.73}
+    if model and year and price and continent and engine_volume and fuel_type:
+        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
+        if file_path:
+            with open(file_path, "w") as file:
+                file.write(f"Марка автомобіля: {model}\n")
+                file.write(f"Рік випуску: {year}\n")
+                file.write(f"Ціна: {price}\n")
+                file.write(f"Континент виробник: {continent}\n")
+                file.write(f"Об'єм двигуна: {engine_volume}\n")
+                file.write(f"Тип пального: {fuel_type}\n")
+            messagebox.showinfo("Успіх", "Дані збережено успішно.")
+    else:
+        messagebox.showerror("Помилка", "Будь ласка, заповніть всі поля.")
 
 root = tk.Tk()
-root.title("Конвертер валют")
-root.configure(bg="black")
-
-entry_amount = ttk.Entry(root, style="Black.TEntry")
-entry_amount.grid(row=0, column=0, padx=10, pady=10)
-
-entry_amount.configure(foreground="orange")
-
-combo_from_currency = ttk.Combobox(root, values=list(exchange_rates.keys()), style="Black.TCombobox")
-combo_from_currency.set("USD")
-combo_from_currency.grid(row=0, column=1, padx=10, pady=10)
-
-combo_to_currency = ttk.Combobox(root, values=list(exchange_rates.keys()), style="Black.TCombobox")
-combo_to_currency.set("USD")
-combo_to_currency.grid(row=0, column=2, padx=10, pady=10)
-
-convert_button = ttk.Button(root, text="Конвертувати", command=convert_currency, style="Black.TButton")
-convert_button.grid(row=1, column=0, columnspan=3, pady=10)
-
-result_label = ttk.Label(root, text="", style="Black.TLabel")
-result_label.grid(row=2, column=0, columnspan=3, pady=10)
-
-style = ttk.Style()
-style.configure("Black.TEntry", fieldbackground="black", foreground="orange")
-style.configure("Black.TCombobox", fieldbackground="black", foreground="orange")
-style.configure("Black.TButton", background="black", foreground="orange")
-style.configure("Black.TLabel", background="black", foreground="orange")
-
+root.title("Вибір автомобіля")
+root.geometry("300x300")
+root.resizable(False, False)
+root.configure(bg='black')
+frame = tk.Frame(root, bg='black')
+frame.pack(expand=True, fill=tk.BOTH)
+tk.Label(frame, text="Марка автомобіля:", bg='black', fg='orange').pack()
+model_entry = tk.Entry(frame)
+model_entry.pack()
+tk.Label(frame, text="Рік випуску:", bg='black', fg='orange').pack()
+year_entry = tk.Entry(frame)
+year_entry.pack()
+tk.Label(frame, text="Ціна:", bg='black', fg='orange').pack()
+price_entry = tk.Entry(frame)
+price_entry.pack()
+continent_var = tk.StringVar(root)
+tk.Label(frame, text="Континент виробник:", bg='black', fg='orange').pack()
+continent_entry = tk.Entry(frame, textvariable=continent_var)
+continent_entry.pack()
+engine_volume_var = tk.StringVar(root)
+tk.Label(frame, text="Об'єм двигуна:", bg='black', fg='orange').pack()
+engine_volume_entry = tk.Entry(frame, textvariable=engine_volume_var)
+engine_volume_entry.pack()
+fuel_type_var = tk.StringVar(root)
+tk.Label(frame, text="Тип пального:", bg='black', fg='orange').pack()
+fuel_type_entry = tk.Entry(frame, textvariable=fuel_type_var)
+fuel_type_entry.pack()
+tk.Button(frame, text="Зберегти", command=save_data, bg='orange').pack()
 root.mainloop()
-
